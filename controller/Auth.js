@@ -5,6 +5,7 @@ const bcrypt=require("bcrypt");
 const Profile=require("../model/profile");
 const jwt=require("jsonwebtoken");
 const mailSender=require("../utils/mailSender")
+const {passwordUpdated}=require("../mail/templates/passwordUpdate")
 
 exports.otpGenerate= async(req,res)=>{
         
@@ -100,14 +101,14 @@ exports.signUp=async (req,res)=>{
         const recentOtp= await OTP.find({email}).sort({createdAt:-1}).limit(1);
         console.log(recentOtp);
         if(recentOtp.length===0){
-         return   res.status(401).json({
+         return   res.status(400).json({
                 success:false,
                 message:"OTP Not Found",
             })           
         }
        
        else if(otp!==recentOtp[0].otp){
-           return res.status(401).json({
+           return res.status(400).json({
                 success:false,
                 message:"OTP Is Invalid",
             })   
@@ -142,6 +143,7 @@ exports.signUp=async (req,res)=>{
         return  res.status(200).json({
             success:true,
             message:"Sign in successfully",
+            user,
           })
 
      } catch(err){
@@ -159,7 +161,7 @@ exports.login=async(req,res)=>{
        
         //validation
         if(!email || !password){
-            res.status(401).json({
+          return  res.status(401).json({
                 success:false,
                 message:"All Field Are Required Please Fill All The Detail",
             })
@@ -182,7 +184,7 @@ exports.login=async(req,res)=>{
             }
 
             let token=jwt.sign(payload,process.env.SECRET_KEY,{
-                expiresIn:"2h",
+                expiresIn:"24h",
             });
             user.token=token;
             user.password=undefined;

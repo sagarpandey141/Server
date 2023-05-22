@@ -5,7 +5,7 @@ const jwt=require("jsonwebtoken");
 exports.Auth=async(req,res,next)=>{
     try{
         //extract
-        const token=req.body.token || req.cookie.token || req.header("Authorisation").replace("Bearer","");
+        const token=req.body.token || req.cookies.token || req.header("Authorisation").replace("Bearer","");
 
         if(!token){
             res.status(500).json({
@@ -16,7 +16,7 @@ exports.Auth=async(req,res,next)=>{
         
         try{
 
-        const decode=jwt.verify(token,process.env.SECRET_KEY);
+        const decode=jwt.verify(token,process.env.JWT_SECRET );
         console.log(decode);
         req.user=decode
         

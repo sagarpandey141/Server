@@ -45,7 +45,7 @@ exports.createRating=async(req,res)=>{
             {_id:courseId},
            { 
             $push:{
-                ratingAndReview:createRaReview._id
+                ratingAndReview:createRaReview._id,
             }
            },
            {new:true},
